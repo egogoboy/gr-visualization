@@ -1,0 +1,45 @@
+id: visualization_gauge_block
+label: NMEA-gauge source
+category: '[visualization]'
+file_format: 1
+
+templates:
+  imports: from gnuradio import visualization
+  make: visualization.gauge(${serial_port}, ${baud}, ${msg_delay})
+
+parameters:
+  - id: serial_port
+    label: Serial port
+    dtype: string
+    default: ""
+    hide: none
+    doc: >
+      Путь к последовательному устройству, например "/dev/ttyUSB0".
+      Если пусто, блок читает байты из входного потока.
+
+  - id: baud
+    label: Baudrate
+    dtype: int
+    default: 115200
+    hide: none
+    doc: Baudrate для последовательного порта.
+
+  - id: msg_delay
+    label: Message delay
+    dtype: float
+    default: 0.0
+    units: s
+    hide: none
+    doc: Необязательная пауза между публикациями.
+
+inputs: []
+
+outputs:
+  - id: msg_out
+    domain: message
+    dtype: pmt
+    doc: >
+      Выходные сообщения (PMT dictionary) с ключами:
+      timestamp, lat, lon, alt, sog, cog, vx, vy, pitch, roll, yaw, valid.
+
+
