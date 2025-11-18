@@ -41,10 +41,11 @@ class gauge(gr.sync_block):
                                in_sig=[],
                                out_sig=None)
 
-        self.send_commang_to_gauge("PNVGINS,DEBUG,1")
-
         self.serial_port = serial_port or ""
         self.baud = int(baud)
+
+        self.send_commang_to_gauge("PNVGINS,DEBUG,1")
+
         self.msg_delay = float(msg_delay)
 
         self._buffer = bytearray()
@@ -350,7 +351,7 @@ class gauge(gr.sync_block):
 
         command = f"${payload}*{cs}\r\n"
 
-        with serial.Serial(self.port, self.baud, timeout=1) as ser:
+        with serial.Serial(self.serial_port, self.baud, timeout=1) as ser:
             ser.write(command.encode())
 
         print(f'[Gauge Block] sent command {command} to {self.serial_port}')
