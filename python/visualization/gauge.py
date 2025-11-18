@@ -223,8 +223,6 @@ class gauge(gr.sync_block):
                 if not d:
                     continue
 
-                print("[Gauge block] Received message from queue")
-
                 ts = d.get('timestamp')
                 if ts is None:
                     self._publish_dict(d)
