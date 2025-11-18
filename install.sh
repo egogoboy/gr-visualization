@@ -13,6 +13,7 @@ make install
 cd ../../../
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_LIBDIR=lib ..
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ -DGR_LIBRARY_DIR=/usr/local/lib -DLIB_SUFFIX="" -DCMAKE_INSTALL_LIBDIR=lib ..
+
 make
 make install

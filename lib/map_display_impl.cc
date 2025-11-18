@@ -73,15 +73,27 @@ void map_display_impl::process_queue()
 
     if (local.empty())
         return;
-
-    // можно обрабатывать все сообщения или только последний (например, последний)
-    // тут обновляем UI по последнему сообщению (чтобы не перегружать интерфейс)
     const telemetry_msg& last = local.back();
-    update_coordinates(last.lat, last.lon);
-    update_drift_label(last.yaw, last.cog); // TEST
-    update_attitude_indicator(last.pitch, last.roll);
-    update_speed_indicator(last.sog);
-    update_heading_indicator(last.yaw);
+
+    if (last.lat != 0 || last.lon != 0) {
+        update_coordinates(last.lat, last.lon);
+    }
+    
+    if (last.yaw != 0 || last.cog != 0) {
+        update_drift_label(last.yaw, last.cog);
+    }
+
+    if (last.pitch != 0 || last.roll != 0) {
+        update_attitude_indicator(last.pitch, last.roll);
+    }
+
+    if (last.sog != 0) {
+        update_speed_indicator(last.sog);
+    }
+
+    if (last.yaw != 0) {
+        update_heading_indicator(last.yaw);
+    }
 }
 
 QBoxLayout* map_display_impl::createLayout()
