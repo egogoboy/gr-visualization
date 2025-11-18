@@ -64,7 +64,7 @@ class gauge(gr.sync_block):
         self._reader_thread = None
         if self.serial_port:
             if pyserial is None:
-                print("[PARSER] pyserial not installed; cannot open serial port")
+                print("[Gauge block] pyserial not installed; cannot open serial port")
             else:
                 try:
                     self._ser = pyserial.Serial(self.serial_port,
@@ -75,9 +75,9 @@ class gauge(gr.sync_block):
                                                 stopbits=pyserial.STOPBITS_ONE)
                     self._reader_thread = threading.Thread(target=self._serial_reader_loop, daemon=True)
                     self._reader_thread.start()
-                    print(f"[PARSER] opened serial {self.serial_port} @ {self.baud}")
+                    print(f"[Gauge block] opened serial {self.serial_port} @ {self.baud}")
                 except Exception as e:
-                    print("[PARSER] Failed to open serial port:", e)
+                    print("[Gauge block] Failed to open serial port:", e)
                     self._ser = None
 
 
@@ -101,7 +101,7 @@ class gauge(gr.sync_block):
                     time.sleep(0.01)
 
             except Exception as e:
-                print("[PARSER] serial read error:", e)
+                print("[Gauge block] serial read error:", e)
                 time.sleep(0.5)
 
 
@@ -223,6 +223,8 @@ class gauge(gr.sync_block):
                 if not d:
                     continue
 
+                print("[Gauge block] Received message from queue")
+
                 ts = d.get('timestamp')
                 if ts is None:
                     self._publish_dict(d)
@@ -244,7 +246,7 @@ class gauge(gr.sync_block):
             except pynmea2.ParseError:
                 continue
             except Exception as e:
-                print("[PARSER] parse error:", e)
+                print("[Gauge block] parse error:", e)
                 continue
 
         if current_record:
@@ -295,7 +297,7 @@ class gauge(gr.sync_block):
         try:
             self.message_port_pub(pmt.intern('msg_out'), pmt_dict)
         except Exception as e:
-            print("[PARSER] message_port_pub error:", e)
+            print("[Gauge block] message_port_pub error:", e)
 
 
     # -------------------------
