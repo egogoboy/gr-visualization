@@ -17,3 +17,6 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr/local/ -DGR_LIBRARY_DIR=/usr/local/lib -DLIB_S
 
 make
 make install
+
+cd ..
+./wsl_troubleshooting.sh
