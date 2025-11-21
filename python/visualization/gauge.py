@@ -28,14 +28,13 @@ class gauge(gr.sync_block):
         serial_port: путь к последовательному устройству, например "/dev/ttyUSB0".
                      Если пустая строка, блок читает байты из stream input (in_sig).
         baud: baudrate для serial_port (int)
-        msg_delay: необязательная пауза между публикациями (сек)
     Входы:
         - поток байт (np.uint8) — используется только если serial_port == "".
     Выходы:
         - message port 'msg_out' — pmt dictionary с ключами:
           timestamp, lat, lon, alt, sog, cog, vx, vy, pitch, roll, yaw, valid
     """
-    def __init__(self, serial_port: str = "", baud: int = 115200, msg_delay: float = 0.0):
+    def __init__(self, serial_port: str = "", baud: int = 115200):
         gr.sync_block.__init__(self,
                                name="NMEA Parser",
                                in_sig=[],
@@ -45,8 +44,6 @@ class gauge(gr.sync_block):
         self.baud = int(baud)
 
         self.send_commang_to_gauge("PNVGINS,DEBUG,1")
-
-        self.msg_delay = float(msg_delay)
 
         self._buffer = bytearray()
         self._buf_lock = threading.Lock()
@@ -62,6 +59,9 @@ class gauge(gr.sync_block):
 
         self._ser = None
         self._reader_thread = None
+
+        self.previous_record = {}
+
         if self.serial_port:
             if pyserial is None:
                 print("[Gauge block] pyserial not installed; cannot open serial port")
@@ -238,9 +238,6 @@ class gauge(gr.sync_block):
 
                     current_record.update(d)
 
-                if self.msg_delay:
-                    time.sleep(self.msg_delay)
-
             except pynmea2.ParseError:
                 continue
             except Exception as e:
@@ -249,7 +246,9 @@ class gauge(gr.sync_block):
 
         if current_record:
             self._publish_record(current_record)
-
+            self.previous_record = current_record
+        else:
+            self.publish_record(self.previous_record)
 
     # -------------------------
     # publish helpers
